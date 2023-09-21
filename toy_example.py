@@ -14,12 +14,12 @@ if __name__ == '__main__':
             n_init = 4
             n_iter = 4
             tkwargs = {"dtype": torch.double, "device": "cpu"}
-            noise_level = 0.1
+            noise_level = 0.3
             noisy_func = Noisy_synthetic_function(TestGaussian(negate=False), tkwargs=tkwargs)
             extreme = findExtrema(noisy_func.function)
             noisy_func.noise_std = noise_level * (extreme[1] - extreme[0])
             print(extreme)
-            bo = BO(noisy_func, acq_kind="q_NEI", initial_design="sobol", transform_inputs=True)
+            bo = BO(noisy_func, acq_kind="EI", initial_design="sobol", transform_inputs=True)
             dir = os.path.join("toy_result")
             if not os.path.exists(dir):
                 os.makedirs(dir)
