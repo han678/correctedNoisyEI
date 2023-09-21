@@ -16,11 +16,7 @@ def topk(y, t, k):
 
 def risk(model, n, gpu_id=-1):
     batch_size = 32
-    if os.name == 'nt':
-        data = LabeledImageDatasetSubset("D:/codes/data/random_50000_with_label", subset=n)
-    else:
-        data = LabeledImageDatasetSubset("/data/leuven/326/vsc32665/random_50000_with_label", subset=n)
-    # data = LabeledImageDatasetSubset("/users/visics/hzhou/data/random_50000_with_label", subset=n)
+    data = LabeledImageDatasetSubset("/users/visics/hzhou/data/random_50000_with_label", subset=n)
     data = TransformDataset(data, transform_with_label)
     data_iter = chainer.iterators.MultiprocessIterator(data, batch_size, repeat=False, shuffle=False)
     del data
@@ -46,11 +42,7 @@ def risk(model, n, gpu_id=-1):
 
 def f_norm(model, compressed_model, pick, n, gpu_id=-1):
     batch_size = 32
-    if os.name == 'nt':
-        data = ImageDatasetSubset("D:/codes/data/random_50000", subset=n)
-    else:
-        data = ImageDatasetSubset("/data/leuven/326/vsc32665/random_50000", subset=n)
-    # data = ImageDatasetSubset("/users/visics/hzhou/data/random_50000", subset=n)
+    data = ImageDatasetSubset("/users/visics/hzhou/data/random_50000", subset=n)
     data = TransformDataset(data, transform)
     data_iter = chainer.iterators.MultiprocessIterator(data, batch_size, repeat=False, shuffle=False)
     del data
