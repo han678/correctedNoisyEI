@@ -24,46 +24,43 @@ if __name__ == '__main__':
     global args
     args = parser.parse_args()
     tkwargs = {"device": torch.device("cuda:0" if torch.cuda.is_available() else "cpu"), "dtype": torch.double}
-    acqs = ['PI', 'UCB', "EI_C", 'PI_C', 'EI', "q_NEI", "NEI"]
+    acq = "NEI" # 'PI', 'UCB', "EI_C", 'PI_C', 'EI', "q_NEI"
     # run experiments
-    bench_funcs = []
     noise_level = args.noise_level  # 0.006
-    bench_funcs.append(Ackley(dim=5, negate=False))
+    function = Ackley(dim=5, negate=False))
     seed = args.seed
-    for function in bench_funcs:
-        noisy_func = Noisy_synthetic_function(function, tkwargs=tkwargs)
-        extreme = findExtrema(noisy_func.function)
-        noisy_func.noise_std = noise_level * (extreme[1] - extreme[0])
-        print(extreme)
-        print("Optimum is:", noisy_func.function._optimal_value)
-        output_dir = f"./benchmark_results/{noisy_func.name}_noise{noise_level}"
-        os.makedirs(output_dir, exist_ok=True)
+    noisy_func = Noisy_synthetic_function(function, tkwargs=tkwargs)
+    extreme = findExtrema(noisy_func.function)
+    noisy_func.noise_std = noise_level * (extreme[1] - extreme[0])
+    print(extreme)
+    print("Optimum is:", noisy_func.function._optimal_value)
+    output_dir = f"./benchmark_results/{noisy_func.name}_noise{noise_level}"
+    os.makedirs(output_dir, exist_ok=True)
         while True:
             try:
                 set_determinism(seed + 123456)
-                for acq in acqs:
-                    bo = BO(noisy_func, acq_kind=acq, initial_design="sobol", transform_inputs=True)
-                    bo.initialize(int(noisy_func.dim * 3))
-                    st = time.time()
-                    bo.inference(max_iter=args.iter)
-                    print("==> time is {}.".format(time.time() - st))
-                    # record the best point
-                    acq_dir = os.path.join(output_dir, acq, str(seed))
-                    os.makedirs(acq_dir, exist_ok=True)
-                    fn_path = os.path.join(acq_dir, f"info.json")
-                    all_info = {}
-                    # get best objective of the observation set
-                    obs_best_f = np.Inf
-                    for i in range(len(bo.obs.y)):
-                        obs_x = bo.obs.X[i].tolist()
-                        obs_y = bo.obs.y[i].tolist()
-                        true_f = noisy_func.function.evaluate_true(torch.tensor(obs_x)).tolist()
-                        if true_f <= obs_best_f:
-                            obs_best_f = true_f
-                        all_info.update({f"iteration {i + 1}": {"x": obs_x, "y": obs_y, "best_obj": obs_best_f,
-                                                                "acq_x": bo.best_observed_acq[i]}})
-                    with open(fn_path, "w") as f:
-                        json.dump(all_info, f)
+                bo = BO(noisy_func, acq_kind=acq, initial_design="sobol", transform_inputs=True)
+                bo.initialize(int(noisy_func.dim * 3))
+                st = time.time()
+                bo.inference(max_iter=args.iter)
+                print("==> time is {}.".format(time.time() - st))
+                # record the best point
+                acq_dir = os.path.join(output_dir, acq, str(seed))
+                os.makedirs(acq_dir, exist_ok=True)
+                fn_path = os.path.join(acq_dir, f"info.json")
+                all_info = {}
+                # get best objective of the observation set
+                obs_best_f = np.Inf
+                for i in range(len(bo.obs.y)):
+                    obs_x = bo.obs.X[i].tolist()
+                    obs_y = bo.obs.y[i].tolist()
+                    true_f = noisy_func.function.evaluate_true(torch.tensor(obs_x)).tolist()
+                    if true_f <= obs_best_f:
+                        obs_best_f = true_f
+                    all_info.update({f"iteration {i + 1}": {"x": obs_x, "y": obs_y, "best_obj": obs_best_f,
+                                                            "acq_x": bo.best_observed_acq[i]}})
+                with open(fn_path, "w") as f:
+                    json.dump(all_info, f)
                 break  # If the above succeeds, we break here
             except Exception as e:
                 print(e)
