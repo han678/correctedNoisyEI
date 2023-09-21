@@ -114,7 +114,6 @@ def test_imagenet_svd():
     ratio_list = torch.tensor([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
     compress_and_report(m, ratio_list)
     print("==> Original model:")
-    # run_validate(m.model, "/usr/data/xma/ILSVRC2012/val", 1)
     run_validate(m.model, "/users/visics/hzhou/data/ILSVRC2012", 1)
 
 
