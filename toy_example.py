@@ -16,7 +16,6 @@ if __name__ == '__main__':
             tkwargs = {"dtype": torch.double, "device": "cpu"}
             noise_level = 0.1
             noisy_func = Noisy_synthetic_function(TestGaussian(negate=False), tkwargs=tkwargs)
-            #noisy_func = Noisy_synthetic_function(DoubleGaussian(negate=False), tkwargs=tkwargs)
             extreme = findExtrema(noisy_func.function)
             noisy_func.noise_std = noise_level * (extreme[1] - extreme[0])
             print(extreme)
