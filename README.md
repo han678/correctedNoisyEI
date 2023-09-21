@@ -1,5 +1,5 @@
 ## Corrected Noisy Expected Improvement function
-
+This is the code for "A Corrected Expected Improvement Acquisition Function Under Noisy Observations".
 
 #### key dependencies 
 (excluding commonly used packages such as scipy, numpy, torch etc.)
@@ -11,7 +11,6 @@
        ```bash
         pip install chainer
         ```
-
 #### toy example 
 ```bash
 python toy_example.py
