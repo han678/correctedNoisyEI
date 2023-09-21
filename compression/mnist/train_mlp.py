@@ -7,8 +7,6 @@ import chainer.functions as F
 import chainer.links as L
 from chainer import training
 from chainer.training import extensions
-
-sys.path.append(r'/users/visics/hzhou/iccv/model_compression/')
 from compression.mnist.mlp_model import MLP
 
 
