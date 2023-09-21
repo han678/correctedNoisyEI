@@ -4,8 +4,6 @@ import errno
 
 from PIL import Image
 
-# root = "/users/visics/hzhou/data/"
-# root = "D:/codes/data/"
 root = "/data/leuven/326/vsc32665/"
 fn_train = root + "val.txt"
 image_names = []
