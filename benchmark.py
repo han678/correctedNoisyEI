@@ -14,6 +14,12 @@ parser.add_argument('--seed', type=int, default=0, metavar='S', help='random see
 parser.add_argument('--iter', type=int, default=40, metavar='N',
                     help='number of iterations to train (default: 100)')
 parser.add_argument('--noise_level', type=float, default=0.05)
+parser.add_argument(
+    "--output_dir", type=str, default=".\\results", help="output directory",
+)
+parser.add_argument(
+    "--acq", type=str, default="NEI", help="acquisition function",
+)
 
 
 def distance_to_optimal(x, optimal):
@@ -24,7 +30,7 @@ if __name__ == '__main__':
     global args
     args = parser.parse_args()
     tkwargs = {"device": torch.device("cuda:0" if torch.cuda.is_available() else "cpu"), "dtype": torch.double}
-    acq = "NEI" # 'PI', 'UCB', "EI_C", 'PI_C', 'EI', "q_NEI"
+    acq = args.acq
     # run experiments
     noise_level = args.noise_level  # 0.006
     function = Ackley(dim=5, negate=False))
@@ -34,7 +40,7 @@ if __name__ == '__main__':
     noisy_func.noise_std = noise_level * (extreme[1] - extreme[0])
     print(extreme)
     print("Optimum is:", noisy_func.function._optimal_value)
-    output_dir = f"./benchmark_results/{noisy_func.name}_noise{noise_level}"
+    output_dir = args.output_dir
     os.makedirs(output_dir, exist_ok=True)
         while True:
             try:
