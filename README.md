@@ -18,6 +18,6 @@ python toy_example.py
 ![figure](https://github.com/han678/correctedNoisyEI/blob/d5acac5e4dedbc128b2a3dab42c9216e888ebc3c/toy_result/TestGaussian_1d_plots.png)
 #### synthetic function 
 ```bash
-python benchmark.py
+python benchmark.py --output_dir OUTPUT_DIR --acq "NEI"
 ```
 #### model compression
