@@ -24,6 +24,6 @@ python benchmark.py --output_dir OUTPUT_DIR --acq {acq_name}
 ```acq``` can be 'q_NEI', 'NEI', 'PI', 'UCB', 'EI_C', 'PI_C' or 'EI'.
 #### model compression
 ```bash
-python benchmark.py --output_dir OUTPUT_DIR --acq {acq_name} --model {model_name}
+python compress_task.py --output_dir OUTPUT_DIR --acq {acq_name} --model {model_name}
 ```
 ```model``` can be 'Resnet50', 'VGG16' or 'FC3'.
