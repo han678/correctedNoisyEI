@@ -55,5 +55,4 @@ if __name__ == '__main__':
     print("True Function value is:", true_value)
     print("Optimum is:", noisy_func.function.optimal_value)
     # plot all
-    bo.plot_acq(fig_dir=dir)
     bo.plot_all(n_init, fig_dir=dir)
