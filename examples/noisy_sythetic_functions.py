@@ -70,34 +70,6 @@ class Noisy_synthetic_function():
     def optimizers(self) -> float:
         return self.function._optimizers
 
-class DoubleGaussian(SyntheticTestFunction):
-    dim = 1
-    _optimal_value = -0.4476924240589142
-    _bounds = [(0.0, 10.0)]
-    _optimizers = [(8.0)]
-
-    def __init__(
-            self,
-            noise_std: Optional[float] = None,
-            negate: bool = False,
-    ) -> None:
-        r"""
-        Args:
-            dim: The (input) dimension.
-            noise_std: Standard deviation of the observation noise.
-            negate: If True, negate the function.
-        """
-
-        super().__init__(noise_std=noise_std, negate=negate)
-
-    def evaluate_true(self, X: Tensor) -> Tensor:
-        d = 1
-        distribution1 = MultivariateNormal(loc=8 * torch.ones(d), covariance_matrix=0.8 * torch.eye(d))
-        distribution2 = MultivariateNormal(loc=3 * torch.ones(d), covariance_matrix=1.2 * torch.eye(d))
-        prob = torch.exp(distribution1.log_prob(X)) + torch.exp(distribution2.log_prob(X))
-        return -prob
-
-
 class TestGaussian(SyntheticTestFunction):
     dim = 1
     _optimal_value = 0.03753703832626343
