@@ -23,7 +23,12 @@ parser.add_argument('--test_size', type=int, default=50, metavar='N',
                     help='size of the test set')
 parser.add_argument('--model', type=str, default="Resnet50", metavar='N',
                     help='VGG16 model or FC3 or Resnet50')
-
+parser.add_argument(
+    "--output_dir", type=str, default=".\\results", help="output directory",
+)
+parser.add_argument(
+    "--acq", type=str, default="NEI", help="acquisition function",
+)
 
 def read_results(bo):
     all_info = {}
@@ -41,7 +46,7 @@ def read_results(bo):
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    acqs = ["q_NEI", "NEI", 'PI', 'UCB', "EI_C", 'PI_C', 'EI']
+    acq = args.acq
     # run experiments
     tkwargs = {"device": torch.device("cuda:0" if torch.cuda.is_available() else "cpu"), "dtype": torch.double}
     if args.model == "Resnet50":
@@ -52,19 +57,18 @@ if __name__ == '__main__':
         obj_func = CompressFC3(comp_obj=args.comp_obj, tkwargs=tkwargs, n_sample=args.test_size, negate=False)
     logger = logging.getLogger(obj_func.name)
     logger.setLevel(logging.DEBUG)
-    output_dir = "./comp_results/{}_{}".format(obj_func.name, args.test_size)
+    output_dir = args.output_dir
     os.makedirs(output_dir, exist_ok=True)
     seed = args.seed
     n_iter = args.iter
     n_init = args.n_init
-    for acq in acqs:
-        set_determinism(seed + 123456)
-        bo = BO(obj_func, acq_kind=acq, initial_design="sobol", transform_inputs=True)
-        bo.initialize(n_init)
-        bo.inference(n_iter)
-        dir = os.path.join(output_dir, acq, str(seed))
-        os.makedirs(dir, exist_ok=True)
-        fn_path = os.path.join(dir, "info.json")
-        info = read_results(bo)
-        with open(fn_path, "w") as f:
-            json.dump(info, f)
+    set_determinism(seed + 123456)
+    bo = BO(obj_func, acq_kind=acq, initial_design="sobol", transform_inputs=True)
+    bo.initialize(n_init)
+    bo.inference(n_iter)
+    dir = os.path.join(output_dir, acq, str(seed))
+    os.makedirs(dir, exist_ok=True)
+    fn_path = os.path.join(dir, "info.json")
+    info = read_results(bo)
+    with open(fn_path, "w") as f:
+        json.dump(info, f)
