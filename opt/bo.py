@@ -117,44 +117,6 @@ class BO(object):
         new_acqx = acq_vals.detach().to(**self.tkwargs)
         return new_x, new_acqx
 
-    def plot_acq(self, fig_dir):
-        train_X = self.obs.X[0:-1]
-        if self.transform_inputs:
-            train_X = self.obs.normalize_x(train_X)
-        acq_ei = Acq(acq_kind="EI", maximize=False).func(self.gp, train_X)
-        acq_ei_c = Acq(acq_kind="EI_C", maximize=False).func(self.gp, train_X)
-        pmin, pmax = self.obs.bounds.T[0].tolist()
-        x_test = torch.linspace(pmin, pmax, 1000)[:, None]
-        if self.transform_inputs:
-            x_test = self.obs.normalize_x(x=x_test)
-        y_ei = acq_ei(x_test.unsqueeze(-1)).detach().numpy()
-        y_ei_c = acq_ei_c(x_test.unsqueeze(-1)).detach().numpy()
-        if self.transform_inputs:
-            x_test = self.obs.unnormalize_x(x_norm=x_test)
-        x_test = x_test.detach().numpy()
-        x_best = self.best_xs[-1][0]
-
-        fig, ax = plt.subplots(1, 1, figsize=(10, 7))
-        plt.subplot(111)
-        plt.plot(x_test, y_ei, linewidth=2, label='EI')
-        plt.axvline(x=x_best, ymax=1, color="blue", linestyle='dotted')
-        plt.annotate(r'$x_t^+$', (x_best, 1e-9), fontsize=15)
-        plt.plot(x_test, y_ei_c, color='red', linewidth=2, label='EI_C')
-        plt.xlabel(r'$x$', fontdict={'size': 20})
-        plt.ylabel(r'$\alpha_t(x)$', fontdict={'size': 20})
-        idx1 = np.argmax(y_ei)
-        idx2 = np.argmax(y_ei_c)
-
-        plt.scatter(x_test[idx1], y_ei[idx1], c="blue", s=60, zorder=30, label='next query by EI', alpha=0.5)
-        plt.scatter(x_test[idx2], y_ei_c[idx2], c="red", s=60, zorder=30, marker='^', label='next query by EI_C',
-                    alpha=0.5)
-        plt.annotate(r'$x_t^+$', (self.best_xs[-1][0], 1e-9), fontsize=15)
-        plt.legend(fontsize=15)
-        fig_path = os.path.join(fig_dir, f"{self.obj_func.name}_acq.png")
-        plt.savefig(fig_path)
-        plt.show()
-        plt.close(fig)
-
     def plot_all(self, n_init, fig_dir):
         # figure 1
         pmin, pmax = self.obs.bounds.T[0].tolist()
