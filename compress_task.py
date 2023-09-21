@@ -44,7 +44,6 @@ if __name__ == '__main__':
     acqs = ["q_NEI", "NEI", 'PI', 'UCB', "EI_C", 'PI_C', 'EI']
     # run experiments
     tkwargs = {"device": torch.device("cuda:0" if torch.cuda.is_available() else "cpu"), "dtype": torch.double}
-    # tkwargs = {"device": torch.device("cpu"), "dtype": torch.double}
     if args.model == "Resnet50":
         obj_func = CompressResnet50(comp_obj=args.comp_obj, tkwargs=tkwargs, n_sample=args.test_size, negate=False)
     elif args.model == "VGG16":
