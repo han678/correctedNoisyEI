@@ -1,11 +1,11 @@
-## Abstract
+## Corrected Noisy Expected Improvement function
 
 
-### key dependencies 
+* key dependencies 
 (excluding commonly used packages such as scipy, numpy, torch etc.)
-* botorch
+** botorch
     * install GPy (https://github.com/pytorch/botorch)
-* chainer
+** chainer
     * install chainer (https://github.com/chainer/chainer)
 
 ### toy example 
