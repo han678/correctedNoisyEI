@@ -135,17 +135,21 @@ class BO(object):
                 pred_mean, pred_std = unstandardize_y(pred_mean, pred_std, self.obs.y[0:-1])
                 x_test = self.obs.unnormalize_x(x_norm=x_test)
         x_test = x_test.detach().numpy()
+        y = [y_i for y_i in self.obs._y]
         pred_mean = np.array(pred_mean.numpy())
         pred_std = np.array(pred_std.numpy())
-        fig, ax = plt.subplots(1, 2, figsize=(16, 5))
+        fig, ax = plt.subplots(1, 2, figsize=(18, 5))
         plt.subplot(121)
-        plt.plot(x_test, f_test, linewidth=1, label='Function')
-        plt.plot(x_test, pred_mean, '-', color='navy', linewidth=1, label='GP Model')
+        plt.plot(x_test, f_test, linewidth=1, c="green", label='Function')
+        plt.plot(x_test, pred_mean, '-', color='turquoise', linewidth=1, label='GP Model')
         plt.fill_between(x_test.squeeze(), (pred_mean + 1.96 * pred_std).squeeze(),
                          (pred_mean - 1.96 * pred_std).squeeze(), alpha=.6,
-                         color="cornflowerblue", ec='None', label='Confidence')
-        plt.scatter(self.obs._X[0:n_init], self.obs._y[0:n_init], c="y", s=30, zorder=20, label='Initial points')
-        plt.scatter(self.obs._X[n_init:-1], self.obs._y[n_init:-1], c="red", s=30, zorder=20, marker='^',
+                         color="lightcyan", ec='None', label='Confidence')
+
+        plt.scatter(self.obs._X[0:n_init], y[0:n_init], c="y", s=25, zorder=20,
+                    label='Initial points')
+        plt.scatter(self.obs._X[n_init:-1], y[n_init:-1], c="tomato", s=25, zorder=20,
+                    marker='^',
                     label=r'Proposed points $x_{1:t-1}$')
         # find the point that return the best predictive mean from observation set
         x_best = self.best_xs[-1]
@@ -157,15 +161,16 @@ class BO(object):
             if self.transform_inputs:
                 pred_x_best, _ = unstandardize_y(pred_x_best, pred_std_x_best, self.obs.y[0:-1])
         pred_x_best = pred_x_best.detach().numpy()
-        plt.scatter(self.best_xs[-1], pred_x_best, c=20, s=100, zorder=25, marker='*', label='Best incumbent',
-                    alpha=0.3)
+        plt.scatter(self.best_xs[-1], pred_x_best, c="midnightblue", s=32, zorder=25, marker="P",
+                    label='Best incumbent',
+                    alpha=1)
         plt.axvline(x=self.best_xs[-1][0], ymax=1, color="blue", linestyle='dotted')
-        plt.annotate(r'$x_t^+$', (self.best_xs[-1][0],  f_test.min()-0.08), fontsize=15)
+        plt.annotate(r'$x_t^+$', (self.best_xs[-1][0], f_test.min() - 0.25), fontsize=15)
         # draw observation set
         select_point = list(range(self.obs.X.shape[0] - n_init - 1))
         text = [str(x + 1) for x in select_point]
         for i, txt in enumerate(text):
-            plt.annotate(txt, (self.obs._X[i + n_init][0], self.obs._y[i + n_init][0]), fontsize=20)
+            plt.annotate(txt, (self.obs._X[i + n_init][0], -(self.obs._y[i + n_init][0])), fontsize=15)
         plt.xlabel(r'$x$', fontdict={'size': 20})
         plt.ylabel(r'$f(x)$', fontdict={'size': 20})
         plt.legend()
@@ -185,23 +190,23 @@ class BO(object):
             x_test = self.obs.unnormalize_x(x_norm=x_test)
         x_test = x_test.detach().numpy()
         plt.subplot(122)
-        plt.plot(x_test, y_ei, linewidth=2, label='EI')
+        plt.plot(x_test, y_ei,"lightskyblue", linewidth=2, label='EI')
         x_best = self.best_xs[-1][0]
-        plt.axvline(x=x_best, ymax=1, color="blue", linestyle='dotted')
-        #plt.annotate(r'$x_t^+$', (x_best, f_test.min()), fontsize=15)
-        plt.plot(x_test, y_ei_c, color='red', linewidth=2, label='EI_C')
+        plt.axvline(x=x_best, ymax=1, color="khaki", linestyle='dotted')
+        plt.plot(x_test, y_ei_c, color='lightcoral', linewidth=2, label='EI_C')
 
         plt.xlabel(r'$x$', fontdict={'size': 20})
         plt.ylabel(r'$\alpha_t(x)$', fontdict={'size': 20})
         idx1 = np.argmax(y_ei)
         idx2 = np.argmax(y_ei_c)
 
-        plt.scatter(x_test[idx1], y_ei[idx1], c="blue", s=60, zorder=30, label='next query by EI', alpha=0.5)
-        plt.scatter(x_test[idx2], y_ei_c[idx2], c="red", s=60, zorder=30, marker='^', label='next query by EI_C',
+        plt.scatter(x_test[idx1], y_ei[idx1], c="skyblue", s=60, zorder=30, label='next query by EI', alpha=0.5)
+        plt.scatter(x_test[idx2], y_ei_c[idx2], c="coral", s=60, zorder=30, marker='^', label='next query by EI_C',
                     alpha=0.5)
         plt.annotate(r'$x_t^+$', (self.best_xs[-1][0], 1e-9), fontsize=15)
-        plt.legend(fontsize=15)
+        plt.legend(fontsize=15, loc=(0.4, 0.4))
         fig_path = os.path.join(fig_dir, f"{self.obj_func.name}_plots.png")
         plt.savefig(fig_path)
         plt.show()
         plt.close(fig)
+
