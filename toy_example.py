@@ -3,7 +3,7 @@ import torch
 from monai.utils import set_determinism
 from opt.bo import BO
 import os
-from examples.noisy_sythetic_functions import Noisy_synthetic_function, findExtrema, TestGaussian, DoubleGaussian
+from examples.noisy_sythetic_functions import Noisy_synthetic_function, findExtrema, TestGaussian
 import numpy as np
 
 if __name__ == '__main__':
