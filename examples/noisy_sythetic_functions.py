@@ -126,16 +126,3 @@ class TestGaussian(SyntheticTestFunction):
         prob = torch.exp(distribution1.log_prob(X)) + torch.exp(distribution2.log_prob(X)) + torch.exp(
             distribution3.log_prob(X))
         return prob
-
-
-'''
-if __name__ == '__main__':
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    device = torch.device("cpu")
-    dtype = torch.float
-    train_x = torch.rand(10, 1, device=device, dtype=dtype)
-    func = Noisy_synthetic_function(DoubleGaussian(noise_std=0.1, negate=True))
-    y, y_err = func.evaluate_observed(train_x)
-    print("y:", y, "y_err:", y_err)
-    func.function.plot()
-'''
