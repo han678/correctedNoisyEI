@@ -1,6 +1,5 @@
 import sys
 import torch
-# sys.path.append(r'/users/visics/hzhou/compression/')
 import os
 import time
 from operator import attrgetter
