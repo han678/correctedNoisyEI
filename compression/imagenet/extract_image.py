@@ -4,7 +4,7 @@ import errno
 
 from PIL import Image
 
-root = "/data/leuven/326/vsc32665/"
+root = "/data/"
 fn_train = root + "val.txt"
 image_names = []
 image_labels = []
