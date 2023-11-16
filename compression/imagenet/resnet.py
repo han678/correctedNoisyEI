@@ -74,8 +74,7 @@ def compress_and_report(m, ratio_list):
     for n in [10, 50, 100, 200]:
         mu, std = m.f_norm(n)
         print("n: {}, mu: {}, std: {}".format(n, mu, std))
-    # run_validate(m.compressed_model, "/usr/data/xma/ILSVRC2012/val", 1)
-    run_validate(m.compressed_model, "/users/visics/hzhou/data/ILSVRC2012", 1)
+    run_validate(m.compressed_model, "./data/ILSVRC2012", 1)
 
 
 def run_validate(extractor, val_dir, gpu_id=-1, val_subset=None, options={}):
