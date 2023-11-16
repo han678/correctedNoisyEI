@@ -117,6 +117,44 @@ class BO(object):
         new_acqx = acq_vals.detach().to(**self.tkwargs)
         return new_x, new_acqx
 
+    def plot_acq(self, fig_dir):
+        train_X = self.obs.X[0:-1]
+        if self.transform_inputs:
+            train_X = self.obs.normalize_x(train_X)
+        acq_ei = Acq(acq_kind="EI", maximize=False).func(self.gp, train_X)
+        acq_ei_c = Acq(acq_kind="EI_C", maximize=False).func(self.gp, train_X)
+        pmin, pmax = self.obs.bounds.T[0].tolist()
+        x_test = torch.linspace(pmin, pmax, 1000)[:, None]
+        if self.transform_inputs:
+            x_test = self.obs.normalize_x(x=x_test)
+        y_ei = acq_ei(x_test.unsqueeze(-1)).detach().numpy()
+        y_ei_c = acq_ei_c(x_test.unsqueeze(-1)).detach().numpy()
+        if self.transform_inputs:
+            x_test = self.obs.unnormalize_x(x_norm=x_test)
+        x_test = x_test.detach().numpy()
+        x_best = self.best_xs[-1][0]
+
+        fig, ax = plt.subplots(1, 1, figsize=(10, 7))
+        plt.subplot(111)
+        plt.plot(x_test, y_ei, linewidth=2, label='EI')
+        plt.axvline(x=x_best, ymax=1, color="blue", linestyle='dotted')
+        plt.annotate(r'$x_t^+$', (x_best, 1e-9), fontsize=15)
+        plt.plot(x_test, y_ei_c, color='red', linewidth=2, label='EI_C')
+        plt.xlabel(r'$x$', fontdict={'size': 20})
+        plt.ylabel(r'$\alpha_t(x)$', fontdict={'size': 20})
+        idx1 = np.argmax(y_ei)
+        idx2 = np.argmax(y_ei_c)
+
+        plt.scatter(x_test[idx1], y_ei[idx1], c="blue", s=60, zorder=30, label='next query by EI', alpha=0.5)
+        plt.scatter(x_test[idx2], y_ei_c[idx2], c="red", s=60, zorder=30, marker='^', label='next query by EI_C',
+                    alpha=0.5)
+        plt.annotate(r'$x_t^+$', (self.best_xs[-1][0], 1e-9), fontsize=15)
+        plt.legend(fontsize=15)
+        fig_path = os.path.join(fig_dir, f"{self.obj_func.name}_acq.png")
+        plt.savefig(fig_path)
+        plt.show()
+        plt.close(fig)
+
     def plot_all(self, n_init, fig_dir):
         # figure 1
         pmin, pmax = self.obs.bounds.T[0].tolist()
@@ -138,7 +176,7 @@ class BO(object):
         y = [y_i for y_i in self.obs._y]
         pred_mean = np.array(pred_mean.numpy())
         pred_std = np.array(pred_std.numpy())
-        fig, ax = plt.subplots(1, 2, figsize=(18, 5))
+        fig, ax = plt.subplots(1, 2, figsize=(18, 6))
         plt.subplot(121)
         plt.plot(x_test, f_test, linewidth=1, c="green", label='Function')
         plt.plot(x_test, pred_mean, '-', color='turquoise', linewidth=1, label='GP Model')
@@ -210,3 +248,95 @@ class BO(object):
         plt.show()
         plt.close(fig)
 
+    def plot_gp(self, n_init, fig_dir):
+        # figure 1
+        pmin, pmax = self.obs.bounds.T[0].tolist()
+        x_test = torch.linspace(pmin, pmax, 1000)[:, None]
+        if self.obj_func.function.negate == True:
+            f_test = -self.obj_func.function.evaluate_true(x_test).detach().numpy()
+        else:
+            f_test = self.obj_func.function.evaluate_true(x_test).detach().numpy()
+        if self.transform_inputs:
+            x_test = self.obs.normalize_x(x=x_test)
+        with torch.no_grad():
+            # get the posterior of the function without noise
+            posterior = self.gp.posterior(X=x_test, observation_noise=False)
+            pred_mean, pred_std = posterior.mean, torch.sqrt(posterior.variance)
+            if self.transform_inputs:
+                pred_mean, pred_std = unstandardize_y(pred_mean, pred_std, self.obs.y[0:-1])
+                x_test = self.obs.unnormalize_x(x_norm=x_test)
+        x_test = x_test.detach().numpy()
+        pred_mean = np.array(pred_mean.numpy())
+        pred_std = np.array(pred_std.numpy())
+        fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+        plt.subplot(111)
+        plt.plot(x_test, f_test, linewidth=1, c="green", label='Function')
+        plt.plot(x_test, pred_mean, '-', color='turquoise', linewidth=1, label='GP Model')
+        plt.fill_between(x_test.squeeze(), (pred_mean + 1.96 * pred_std).squeeze(),
+                         (pred_mean - 1.96 * pred_std).squeeze(), alpha=.6,
+                         color="lightcyan", ec='None', label='Confidence')
+        plt.scatter(self.obs._X, self.obs._y, c="y", s=30, zorder=20, label='Data')
+        # find the point that return the best predictive mean from observation set
+        x_best = self.best_xs[-1]
+        if self.transform_inputs:
+            x_best = self.obs.normalize_x(x=torch.tensor(x_best))
+        with torch.no_grad():
+            posterior2 = self.gp.posterior(X=x_best, observation_noise=False)
+            pred_x_best, pred_std_x_best = posterior2.mean, torch.sqrt(posterior2.variance)
+            if self.transform_inputs:
+                pred_x_best, _ = unstandardize_y(pred_x_best, pred_std_x_best, self.obs.y[0:-1])
+        pred_x_best = pred_x_best.detach().numpy()
+        #plt.scatter(self.best_xs[-1], pred_x_best, c=20, s=100, zorder=25, marker='*', label='Best incumbent',
+                    # alpha=0.3)
+        # plt.axvline(x=self.best_xs[-1][0], ymax=1, color="blue", linestyle='dotted')
+        # plt.annotate(r'$x_t^+$', (self.best_xs[-1][0],  f_test.min()-0.08), fontsize=15)
+        # draw observation set
+        select_point = list(range(self.obs.X.shape[0] - n_init - 1))
+        text = [str(x + 1) for x in select_point]
+        for i, txt in enumerate(text):
+            plt.annotate(txt, (self.obs._X[i + n_init][0], self.obs._y[i + n_init][0]), fontsize=20)
+        plt.xlabel(r'$x$', fontdict={'size': 20})
+        plt.ylabel(r'$y$', fontdict={'size': 20})
+        plt.legend(fontsize=18, bbox_to_anchor=(0.5, 0.4))
+        fig_path = os.path.join(fig_dir, f"{self.obj_func.name}_plots.png")
+        plt.savefig(fig_path)
+        plt.show()
+        plt.close(fig)
+
+    def plot_ei(self, fig_dir):
+        train_X = self.obs.X[0:-1]
+        if self.transform_inputs:
+            train_X = self.obs.normalize_x(train_X)
+        acq_ei = Acq(acq_kind="EI", maximize=False).func(self.gp, train_X)
+        acq_ei_c = Acq(acq_kind="EI_C", maximize=False).func(self.gp, train_X)
+        pmin, pmax = self.obs.bounds.T[0].tolist()
+        x_test = torch.linspace(pmin, pmax, 1000)[:, None]
+        if self.transform_inputs:
+            x_test = self.obs.normalize_x(x=x_test)
+        y_ei = acq_ei(x_test.unsqueeze(-1)).detach().numpy()
+        y_ei_c = acq_ei_c(x_test.unsqueeze(-1)).detach().numpy()
+        if self.transform_inputs:
+            x_test = self.obs.unnormalize_x(x_norm=x_test)
+        x_test = x_test.detach().numpy()
+        x_best = self.best_xs[-1][0]
+
+        fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+        plt.subplot(111)
+        plt.plot(x_test, y_ei, linewidth=2, label='acquisition')
+        #plt.axvline(x=x_best, ymax=1, color="blue", linestyle='dotted')
+        #plt.annotate(r'$x_t^+$', (x_best, 1e-9), fontsize=15)
+        #plt.plot(x_test, y_ei_c, color='red', linewidth=2, label='EI_C')
+        plt.xlabel(r'$x$', fontdict={'size': 20})
+        plt.ylabel(r'$\alpha_t(x)$', fontdict={'size': 20})
+        idx1 = np.argmax(y_ei)
+        idx2 = np.argmax(y_ei_c)
+
+        plt.scatter(x_test[idx1], y_ei[idx1], c="red", s=80, zorder=30, label='next query', alpha=0.5)
+        # plt.scatter(x_test[idx2], y_ei_c[idx2], c="red", s=60, zorder=30, marker='^', label='next query by EI_C',
+        #             alpha=0.5)
+        #plt.annotate(r'$x_t^+$', (self.best_xs[-1][0], 1e-9), fontsize=15)
+        plt.legend(fontsize=30)
+        fig_path = os.path.join(fig_dir, f"{self.obj_func.name}_acq.png")
+        plt.savefig(fig_path)
+        plt.show()
+        plt.close(fig)
