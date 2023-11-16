@@ -1,7 +1,7 @@
 ## Corrected Noisy Expected Improvement function
 This is the code for "A Corrected Expected Improvement Acquisition Function Under Noisy Observations".
 
-#### key dependencies 
+### key dependencies 
 (excluding commonly used packages such as scipy, numpy, torch etc.)
    * botorch (https://github.com/pytorch/botorch)
         ```bash
@@ -11,19 +11,19 @@ This is the code for "A Corrected Expected Improvement Acquisition Function Unde
        ```bash
         pip install chainer
         ```
-#### toy example 
+### toy example 
 The following example compares our proposed acquisition function with expected improvement under noisy observations on a simple synthetic function.
 ```bash
 python toy_example.py
 ```
 ![figure](https://github.com/han678/correctedNoisyEI/blob/d5acac5e4dedbc128b2a3dab42c9216e888ebc3c/toy_result/TestGaussian_1d_plots.png)
-#### synthetic function 
+### synthetic function 
 ```bash
 python benchmark.py --output_dir OUTPUT_DIR --acq {acq_name}
 ```
 ```acq``` can be 'q_NEI', 'NEI', 'PI', 'UCB', 'EI_C', 'PI_C' or 'EI'.
-#### model compression
-##### Prepare dataset
+### model compression
+#### Prepare dataset
 * ImageNet (ILSVRC2012)
 The dataset can be found on the official website if you are affiliated with a research organization. It is also available on Academic torrents.
 Download the ILSVRC2012_img_train.tar and extract those images under the folder './data/ILSVRC2012'. Then run the following code to process the ImageNet dataset.
