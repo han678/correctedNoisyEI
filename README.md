@@ -23,7 +23,13 @@ python benchmark.py --output_dir OUTPUT_DIR --acq {acq_name}
 ```
 ```acq``` can be 'q_NEI', 'NEI', 'PI', 'UCB', 'EI_C', 'PI_C' or 'EI'.
 #### model compression
-```bash
+##### Prepare dataset
+* ImageNet (ILSVRC2012)
+The dataset can be found on the official website if you are affiliated with a research organization. It is also available on Academic torrents.
+Download the ILSVRC2012_img_train.tar and then extract the images under the folder './data/ILSVRC2012'
+* MNIST (https://github.com/datapythonista/mnist)
+
+#### run compression task
 python compress_task.py --output_dir OUTPUT_DIR --acq {acq_name} --model {model_name}
 ```
 ```model``` can be 'Resnet50', 'VGG16' or 'FC3'.
