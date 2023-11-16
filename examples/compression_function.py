@@ -204,6 +204,6 @@ class CompressResnet50(BaseCompressProblem):
     def theta_statistic(self, theta):
         self.model.compress(theta)
         print("Original Model:")
-        run_validate(self.model.model, "/users/visics/hzhou/data/ILSVRC2012", 1)
+        run_validate(self.model.model, "./data/ILSVRC2012", 1)
         print("Compressed Model:")
-        run_validate(self.model.compressed_model, "/users/visics/hzhou/data/ILSVRC2012", 1)
+        run_validate(self.model.compressed_model, "./data/ILSVRC2012", 1)
