@@ -30,10 +30,7 @@ def get_mnist(withlabel=True, ndim=1, scale=1., dtype=None, label_dtype=numpy.in
 
 def retrieve_mnist(name, urls):
     # download.get_dataset_directory('pfnet/chainer/mnist')
-    if os.name == 'nt':
-        root = "D:/codes/data/minst"
-    else:
-        root = "/data/leuven/326/vsc32665/mnist"
+    root = "./data/minst"
     os.makedirs(root, exist_ok=True)
     path = os.path.join(root, name)
     return download.cache_or_load_file(path, lambda path: make_npz(path, urls), numpy.load)
