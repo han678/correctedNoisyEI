@@ -69,7 +69,7 @@ for line in content:
     i += 1
     if i > total:
         break
-    # new_path = os.path.join(scaled_ime_dir, os.path.basename(path))
+
     im.save(path)
     new_content.append("{}\n".format(path))
     content_with_label.append("{} {}\n".format(path, label))
