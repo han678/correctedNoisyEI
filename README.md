@@ -26,7 +26,7 @@ python benchmark.py --output_dir OUTPUT_DIR --acq {acq_name}
 ##### Prepare dataset
 * ImageNet (ILSVRC2012)
 The dataset can be found on the official website if you are affiliated with a research organization. It is also available on Academic torrents.
-Download the ILSVRC2012_img_train.tar and then extract the images under the folder './data/ILSVRC2012'
+Download the ILSVRC2012_img_train.tar and then extract those images under the folder './data/ILSVRC2012'
 * MNIST (https://github.com/datapythonista/mnist)
 
 #### run compression task
