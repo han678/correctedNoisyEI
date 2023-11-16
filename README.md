@@ -33,6 +33,7 @@ python extract_image.py
 ```
 
 * MNIST (https://github.com/datapythonista/mnist)
+Download the minst dataset and extract those images under the folder './data/mnist'.
 
 #### run compression task
 python compress_task.py --output_dir OUTPUT_DIR --acq {acq_name} --model {model_name}
