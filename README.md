@@ -3,6 +3,11 @@ This is the code for "A Corrected Expected Improvement Acquisition Function Unde
 
 ### Key dependencies 
 (excluding commonly used packages such as scipy, numpy, torch etc.)
+   * python>=3.8
+   * gpytorch
+        ```bash
+        pip install gpytorch
+        ```
    * botorch (https://github.com/pytorch/botorch)
         ```bash
         pip install botorch
