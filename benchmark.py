@@ -11,7 +11,7 @@ from examples.noisy_sythetic_functions import Noisy_synthetic_function, findExtr
 
 parser = argparse.ArgumentParser(description='BO Training for benchmark functions')
 parser.add_argument('--seed', type=int, default=0, metavar='S', help='random seed (default: 1)')
-parser.add_argument('--iter', type=int, default=5, metavar='N',
+parser.add_argument('--iter', type=int, default=100, metavar='N',
                     help='number of iterations to train (default: 100)')
 parser.add_argument('--noise_level', type=float, default=0.05)
 
