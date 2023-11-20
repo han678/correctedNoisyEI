@@ -4,6 +4,7 @@ This is the code for "A Corrected Expected Improvement Acquisition Function Unde
 ### Key dependencies 
 (excluding commonly used packages such as scipy, numpy, torch etc.)
    * python>=3.8
+   * torch==2.0.1 (install using pip rather than conda)
    * gpytorch
         ```bash
         pip install gpytorch
