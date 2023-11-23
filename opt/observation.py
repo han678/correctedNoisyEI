@@ -17,7 +17,7 @@ def standardize_y(y, ystd):
     """
     stddim = -1 if y.dim() < 2 else -2
     y_std = y.std(dim=stddim, keepdim=True)
-    y_std = y_std.where(y_std <= 1e-9, torch.full_like(y_std, 1e-9))
+    y_std = y_std.where(y_std >= 1e-9, torch.full_like(y_std, 1.0))
     y_scaled = (y - y.mean(dim=stddim, keepdim=True)) / y_std
     ystd_scaled = ystd / y_std
     return y_scaled, ystd_scaled
@@ -26,7 +26,7 @@ def standardize_y(y, ystd):
 def unstandardize_y(y_scaled, ystd_scaled, y):
     stddim = -1 if y.dim() < 2 else -2
     y_std = y.std(dim=stddim, keepdim=True)
-    y_std = y_std.where(y_std <= 1e-9, torch.full_like(y_std, 1e-9))
+    y_std = y_std.where(y_std >= 1e-9, torch.full_like(y_std, 1.0))
     y_origin = (y_scaled * y_std) + y.mean(dim=0)
     ystd_origin = ystd_scaled * y_std
     return y_origin, ystd_origin
