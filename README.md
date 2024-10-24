@@ -1,5 +1,5 @@
 ## Corrected Noisy Expected Improvement function
-This is the code for "A Corrected Expected Improvement Acquisition Function Under Noisy Observations".
+This is the code for "A Corrected Expected Improvement Acquisition Function Under Noisy Observations"[[arxiv](https://arxiv.org/pdf/2310.05166)].
 
 ### Key dependencies 
 (excluding commonly used packages such as scipy, numpy, torch etc.)
